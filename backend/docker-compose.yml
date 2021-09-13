@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    image: nginx:1.18-alpine
+    working_dir: /var/www/html/
+    restart: always
+    ports:
+      - '80:80'
+    volumes:
+      - ./apiGateway/nginx.conf:/etc/nginx/conf.d/default.conf
+
+# User Service
+  user-service:
+    # image: node:14
+    build:
+      context: ./userService
+      dockerfile: Dockerfile
+      target: base
+    working_dir: /app
+    restart: always
+    depends_on: 
+      - api-gateway
+      - service-db
+    volumes:
+      - ./userService:/app
+    command: 'npm start'
+    environment:
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      CHOKIDAR_USEPOLLING: 'true'
+
+  service-db:
+    image: mongo
+    volumes:
+      - mongo:/data/db
+    restart: always
+    ports: 
+      - '27017:27017'
+
+# Volumes
+volumes:
+  mongo:
