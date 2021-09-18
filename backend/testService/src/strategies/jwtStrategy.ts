@@ -1,5 +1,5 @@
 import config from '@config/index'
-import User from '@models/user'
+import { IUserJWT } from '@interfaces/IUser'
 import passport from 'passport'
 
 const JwtStrategy = require('passport-jwt').Strategy
@@ -10,21 +10,19 @@ const opts = { jwtFromRequest: '', secretOrKey: '' }
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
 opts.secretOrKey = config.jwtSecret
 
-// Used by the authenticated requests to deserialize the user,
-// i.e., to fetch user details from the JWT.
+const isGoodType = (input: any): input is IUserJWT =>
+    input._id !== undefined &&
+    input.perms !== undefined &&
+    input.iat !== undefined &&
+    input.exp !== undefined
+
+// TODO : Automatiser les checks
+
 passport.use(
     new JwtStrategy(opts, function (jwt_payload, done) {
-        // Check against the DB only if necessary.
-        // This can be avoided if you don't want to fetch user details in each request.
-        User.findOne({ _id: jwt_payload._id }, function (err, user) {
-            if (err) {
-                return done(err, false)
-            }
-            if (user) {
-                return done(null, user)
-            } else {
-                return done(null, false)
-            }
-        })
+        if (!isGoodType(jwt_payload)) {
+            console.log('Not the good type')
+        }
+        return done(null, { user: jwt_payload })
     }),
 )

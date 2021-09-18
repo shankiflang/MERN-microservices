@@ -1,16 +1,8 @@
-import { ISession } from '@interfaces/ISession'
-import { Document } from 'mongoose'
+import { Document, ObjectId } from 'mongoose'
 
-export interface IUser extends Document {
-    email: string
-    password: string
-    refreshToken: Array<ISession>
-    salt?: string
-    hash?: string
-    group: string
-}
-
-export interface IUserInputDTO {
-    email: string
-    password: string
+export interface IUserJWT extends Document {
+    _id: ObjectId
+    perms: Array<string>
+    iat: string
+    exp: string
 }

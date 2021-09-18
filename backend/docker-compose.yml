@@ -15,9 +15,8 @@ services:
     # image: node:14
     build:
       context: ./userService
-      dockerfile: Dockerfile
+      dockerfile: ./Dockerfile
       target: base
-    working_dir: /app
     restart: always
     depends_on: 
       - api-gateway
@@ -26,9 +25,32 @@ services:
       - ./userService:/app
     command: 'npm start'
     environment:
-      MONGO_DB_NAME: ${MONGO_DB_NAME}
-      JWT_SECRET: ${JWT_SECRET}
+      # MONGO_DB_NAME: ${MONGO_DB_NAME}
+      # JWT_SECRET: ${JWT_SECRET}
       CHOKIDAR_USEPOLLING: 'true'
+    env_file: 
+      - .env
+
+# Test Service
+  test-service:
+    # image: node:14
+    build:
+      context: ./testService
+      dockerfile: Dockerfile
+      target: base
+    restart: always
+    depends_on: 
+      - api-gateway
+      - service-db
+    volumes:
+      - ./testService:/app
+    command: 'npm start'
+    environment:
+      # MONGO_DB_NAME: ${MONGO_DB_NAME}
+      # JWT_SECRET: ${JWT_SECRET}
+      CHOKIDAR_USEPOLLING: 'true'
+    env_file: 
+      - .env
 
   service-db:
     image: mongo

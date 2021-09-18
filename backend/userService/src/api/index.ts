@@ -4,12 +4,9 @@ import { Router } from 'express'
 
 export default () => {
     const app = Router()
-    const route = Router()
-
-    app.use('/', route)
-
-    auth(route)
-    user(route)
+    
+    app.use('/auth', auth())
+    app.use('/users', user())
 
     return app
 }

@@ -1,15 +1,10 @@
-import auth from '@routes/auth'
-import user from '@routes/user'
+import test from '@routes/test'
 import { Router } from 'express'
 
 export default () => {
     const app = Router()
-    const route = Router()
 
-    app.use('/', route)
-
-    auth(route)
-    user(route)
+    app.use('/', test())
 
     return app
 }
